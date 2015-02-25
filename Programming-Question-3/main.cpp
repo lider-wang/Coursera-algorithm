@@ -12,17 +12,16 @@
  *************************************************************************/
 
 #include <cstdio>
-#include <sstream>
+#include <cstdlib>
 #include <iostream>
+#include <sstream>
 #include <fstream>
 #include <string>
 #include <time.h>
 
 using namespace std;
 
-//#define INPUT_FILE_NAME "QuickSort.txt"
-#define INPUT_FILE_NAME "test1.txt"
-//#define MAX_DATA_SIZE   100000
+#define INPUT_FILE_NAME "kargerMinCut.txt"
 #define STR_SIZE        100
 #define GRAPH_SIZE      200
 
@@ -41,10 +40,8 @@ typedef struct node
 
 typedef struct edge
 {
-    int value;
-    int index_Node_left;
-    int index_Node_right;
-    struct edge* next;
+    int weight;
+    int vertex[2];
 }Edge;
 
 /** construct the node adj-list(in order) from input file */
@@ -53,8 +50,14 @@ void adj_node_insert(Node* adj_list, int index);
 /** create and allocate the graph */
 Node* graph_init(int size);
 
+/** print and show graph */
+void adj_graph_print(Node* graph);
+
+/***/
+int min_cut(Node* graph, int size);
+
 /** swap the data of two address */
-void swap(int * left, int * right);
+void swap(int* left, int* right);
 
 /** start of execution time calculate */
 void StartOfExecuteTime(clock_t* begin);
@@ -74,36 +77,38 @@ int main(int argc, char** argv)
 #endif
 
     // program result variable
-    string data_str = NULL;
-    int min_cut     = 0;
+    string data_str;
+    int min_cut  = 0;
     Node* graph = NULL;
     
 
     // local variable
-    int i=0,tmp;
-
+    int i=0;
+    int tmp=0;
 
     /**  procedure 1:  file IO process and construct graph */
     ifstream fin;
+    int base;
     fin.open(INPUT_FILE_NAME,ios::in);
     graph = graph_init(GRAPH_SIZE);
     
+    
     while (std::getline(fin, data_str))
     {
-        cout << "Line" << i <<": " << endl;
-        cout << "Data: " ;
-
         std::istringstream iss(data_str);
+        if (! (iss >> base))
+            break;
+        cout << "base : " << base << endl;
         while (iss >> tmp)
         {
-            cout << "( " << tmp << ") "; 
+            cout << " -tmp-" << tmp << endl;
+            adj_node_insert(&graph[base], tmp);
         }
-
-        cout << endl;
     }
+    
+    /** procedure 2: Random Contraction Algorithm and min-cut problem */
+    min_cut = min_cut(graph, GRAPH_SIZE);
 
-
-    /** procedure 2: sorted and compute comparison */
 
 #ifdef TIME_EXECUTE
     EndOfExecuteTime(&end);
@@ -118,12 +123,11 @@ int main(int argc, char** argv)
 void adj_node_insert(Node* adj_list, int index)
 {
     Node* node_new = NEW_NODE;
-    node_ptr->next  = NULL;
-    node_ptr->index = index;
+    node_new->next  = NULL;
+    node_new->index = index;
 
-    
-    Node* current   = (*adj_list);
-    Node* backup    = (*adj_list);
+    Node* current   = adj_list;
+    Node* backup    = adj_list;
     while (current->next != NULL)
     {   
         // choose location in this loop
@@ -143,8 +147,8 @@ void adj_node_insert(Node* adj_list, int index)
 //-----------------------------------------------------------------------
 Node* graph_init(int size)
 {
-    Node* graph = (Node*) malloc(sizeof((Node) * (size+1));
-    for(int i=0; i<size; i++)
+    Node* graph = (Node*) malloc(sizeof(Node) * (size+1));
+    for(int i=0; i<=size; i++)
     {
         graph[i].index  = i;
         graph[i].next   = NULL;
@@ -152,20 +156,29 @@ Node* graph_init(int size)
     return graph;
 }
 //-----------------------------------------------------------------------
-void graph_node_insert(NODE_PTR vertex, int index)
+void adj_graph_print(Node* graph)
 {
-    int i=0;
+    int i,iend;
+    iend = GRAPH_SIZE;
 
-    if (vertex == NULL)
+    for ( i=1; i<=iend; i++)
     {
-        NODE insert_node = (NODE) malloc(sizeof(NODE));
-        insert_node.index = index;
-        insert_node.next  = NULL;
-        vertex->next      = &insert_node;
-    } else
-    {
-        
+        Node* current = &graph[i];
+        cout << "*************************" << endl;
+        cout << "Node[" << current->index  << "]: " << endl;
+        while (current->next != NULL)
+        {
+            current = current->next;
+            cout << "-" << current->index  << "-";
+        }
+
+        cout << endl;
     }
+}
+//-----------------------------------------------------------------------
+int min_cut(Node* graph, int size)
+{
+    return 0;
 }
 //-----------------------------------------------------------------------
 void swap(int * left, int * right)
@@ -181,7 +194,6 @@ void StartOfExecuteTime(clock_t * begin)
 {
     *begin = clock();
 }
-
 //-----------------------------------------------------------------------
 void EndOfExecuteTime(clock_t * end)
 {
@@ -192,5 +204,4 @@ double ExecuteTimeCount(clock_t start, clock_t end)
 {
     return (double)(end - start) / CLOCKS_PER_SEC;
 }
-
 
