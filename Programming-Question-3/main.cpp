@@ -2,8 +2,8 @@
  **  Standford University Online Course     -   from Coursera
  **         Algorithm: Design and Analysis, Week3 ProblemSet 
  **
- **  Features of Quick Sort
- **     - linear O(n) time, no extra memory
+ **  Features of Karger's algorithm (random contraction algorithm)
+ **     - 
  **     - reduce problem size
  **  
  **  @file      main.cpp
@@ -178,6 +178,12 @@ void adj_graph_print(Node* graph)
 //-----------------------------------------------------------------------
 int min_cut(Node* graph, int size)
 {
+    // copy graph;
+    
+    // random select node
+    // contract node
+    // delete unused
+    
     return 0;
 }
 //-----------------------------------------------------------------------
