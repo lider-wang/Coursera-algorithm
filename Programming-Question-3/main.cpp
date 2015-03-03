@@ -35,13 +35,15 @@ using namespace std;
 typedef struct node 
 {
     int index;
+    int exist;
     struct node* next;
 }Node;
 
 typedef struct edge
 {
     int weight;
-    int vertex[2];
+    int peer1;
+    int peer2;
 }Edge;
 
 /** construct the node adj-list(in order) from input file */
@@ -50,11 +52,17 @@ void adj_node_insert(Node* adj_list, int index);
 /** create and allocate the graph */
 Node* graph_init(int size);
 
-/** print and show graph */
-void adj_graph_print(Node* graph);
+/** copy graph and its memory */
+Node* graph_copy(Node* graph, int graph_size);
 
-/***/
-int min_cut(Node* graph, int size);
+/** free graph and its memory */
+void graph_delete(Node* graph, int graph_size);
+
+/** print and show graph */
+void graph_adj_print(Node* graph, int graph_size);
+
+/** calculate the min-cut problem */
+int min_cut(Node* graph, int graph_size);
 
 /** swap the data of two address */
 void swap(int* left, int* right);
@@ -78,13 +86,17 @@ int main(int argc, char** argv)
 
     // program result variable
     string data_str;
-    int min_cut  = 0;
+    int min_cut_sum  = (int)GRAPH_SIZE * GRAPH_SIZE;
+    int edge_sum = 0;
     Node* graph = NULL;
+    Edge* list  = NULL;
+    
     
 
     // local variable
     int i=0;
     int tmp=0;
+    int node_sum = GRAPH_SIZE;
 
     /**  procedure 1:  file IO process and construct graph */
     ifstream fin;
@@ -92,24 +104,22 @@ int main(int argc, char** argv)
     fin.open(INPUT_FILE_NAME,ios::in);
     graph = graph_init(GRAPH_SIZE);
     
-    
     while (std::getline(fin, data_str))
     {
         std::istringstream iss(data_str);
         if (! (iss >> base))
             break;
-        cout << "base : " << base << endl;
         while (iss >> tmp)
         {
-            cout << " -tmp-" << tmp << endl;
             adj_node_insert(&graph[base], tmp);
         }
     }
-    
+
+    graph_adj_print(graph, node_sum);
     /** procedure 2: Random Contraction Algorithm and min-cut problem */
-    min_cut = min_cut(graph, GRAPH_SIZE);
+    min_cut_sum = min_cut(graph, node_sum);
 
-
+    cout << "min_cut_sum:" << min_cut_sum << endl;
 #ifdef TIME_EXECUTE
     EndOfExecuteTime(&end);
     cout << "Execution time : " << ExecuteTimeCount(begin, end) << endl;
@@ -125,6 +135,7 @@ void adj_node_insert(Node* adj_list, int index)
     Node* node_new = NEW_NODE;
     node_new->next  = NULL;
     node_new->index = index;
+    node_new->exist = 1;
 
     Node* current   = adj_list;
     Node* backup    = adj_list;
@@ -151,15 +162,47 @@ Node* graph_init(int size)
     for(int i=0; i<=size; i++)
     {
         graph[i].index  = i;
+        graph[i].exist  = 1;
         graph[i].next   = NULL;
     }
     return graph;
 }
 //-----------------------------------------------------------------------
-void adj_graph_print(Node* graph)
+Node* graph_copy(Node* graph, int graph_size)
+{
+    int i = 1, iend = graph_size;
+    Node* graph_new = graph_init(graph_size);
+    
+    while (i <= iend)
+    {
+        if (graph[i].next != NULL)
+        {
+            Node* src = &graph[i];
+            Node* dst = &graph_new[i];
+            
+            // copy adj list of node i
+            while (src->next != NULL)
+            {
+                
+
+            }
+            
+        }
+
+        i++;
+    }
+
+    return NULL;
+}
+//-----------------------------------------------------------------------
+void graph_delete(Node* graph, int graph_size)
+{
+}
+//-----------------------------------------------------------------------
+void graph_adj_print(Node* graph, int graph_size);
 {
     int i,iend;
-    iend = GRAPH_SIZE;
+    iend = graph_size;
 
     for ( i=1; i<=iend; i++)
     {
@@ -176,7 +219,7 @@ void adj_graph_print(Node* graph)
     }
 }
 //-----------------------------------------------------------------------
-int min_cut(Node* graph, int size)
+int min_cut(Node* graph, int graph_size)
 {
     // copy graph;
     
